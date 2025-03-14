@@ -22,7 +22,7 @@ app.post(
   "/start-meeting",
   async (req: express.Request, res: express.Response) => {
     try {
-      const { meetingId, password } = req.body;
+      const { meetingId, passcode, botName } = req.body;
 
       if (!meetingId) {
         res.status(400).json({ error: "Meeting ID is required." });
@@ -34,7 +34,11 @@ app.post(
       );
 
       // Start the Zoom bot to join the meeting
-      const meetingDetails = await zoomBot.joinAndListen(meetingId);
+      const meetingDetails = await zoomBot.joinAndListen(
+        meetingId,
+        passcode,
+        botName
+      );
 
       // Save the meeting to the database
       const meetingRepo = AppDataSource.getRepository(Meeting);
