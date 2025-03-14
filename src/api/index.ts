@@ -5,6 +5,9 @@ import cors from "cors";
 import { ZoomBot } from "../zoom/zoomBot";
 import { TranscriptionService } from "../transcription/transcriptionService";
 import { TelexService } from "../telex/telexService";
+import { Meeting } from "../db/meeting.entity";
+import { AppDataSource } from "../db/db";
+import { ZoomService } from "../zoom/zoomService";
 
 dotenv.config();
 const app = express();
@@ -17,37 +20,44 @@ const telexService = new TelexService();
 
 app.post(
   "/start-meeting",
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: express.Request, res: express.Response) => {
     try {
-      const { meetingId, password } = req.body;
+      const { meetingId, passcode, botName } = req.body;
 
       if (!meetingId) {
         res.status(400).json({ error: "Meeting ID is required." });
         return;
       }
 
-      console.log(`🔹 Telex Requested Meeting Join: ${meetingId}`);
-
-      // Start the Zoom bot to join the meeting
-      const meetingAudioText = await zoomBot.joinAndListen(meetingId);
-
-      // Transcribe & summarize meeting
-      const summary = await transcriptionService.transcribeAudio(
-        meetingId,
-        meetingAudioText,
+      console.log(
+        `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${meetingId}`
       );
 
-      // Send summary to Telex
-      //   await telexService.sendToTelex(summary?.text);
+      // Start the Zoom bot to join the meeting
+      const meetingDetails = await zoomBot.joinAndListen(
+        meetingId,
+        passcode,
+        botName
+      );
 
-      res
-        .status(200)
-        .json({ message: "Meeting summarized and sent to Telex.", summary });
+      // Save the meeting to the database
+      const meetingRepo = AppDataSource.getRepository(Meeting);
+      const newMeeting = meetingRepo.create({
+        meeting_id: meetingDetails.id,
+        title: meetingDetails.topic,
+        start_time: new Date(meetingDetails.start_time),
+      });
+
+      await meetingRepo.save(newMeeting);
+
+      res.status(200).json({ message: "Meeting Joined Successfully" });
+      return;
     } catch (error) {
       console.error("❌ Meeting Summarization Failed:", error);
       res.status(500).json({ error: "Internal Server Error" });
+      return;
     }
-  },
+  }
 );
 
 const PORT = process.env.PORT || 3000;
