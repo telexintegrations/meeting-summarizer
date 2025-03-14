@@ -1,5 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
+import { getMeetingTranscript } from "./zoomTranscript";
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ export class ZoomService {
     } catch (error: any) {
       console.error(
         "❌ Failed to get Zoom API token:",
-        error.response?.data || error,
+        error.response?.data || error
       );
       throw new Error("Failed to get Zoom API token");
     }
@@ -44,17 +45,38 @@ export class ZoomService {
           headers: {
             Authorization: `Bearer ${this.accessToken}`,
           },
-        },
+        }
       );
 
       console.log("✅ Correct Join URL Retrieved:", response.data.join_url);
-      return response.data.join_url; // Use this URL to join the meeting
+      return response.data;
     } catch (error: any) {
       console.error(
         "❌ Failed to fetch join URL:",
-        error.response?.data || error,
+        error.response?.data || error
       );
       return null;
+    }
+  }
+
+  // Function to get the transcript of a meeting
+  async getTranscript(meetingId: string): Promise<string> {
+    try {
+      console.log(
+        `🔹 Fetching Meeting Transcript for Meeting ID: ${meetingId}`
+      );
+
+      // Call the function to fetch the transcript
+      const transcript = await getMeetingTranscript(
+        meetingId,
+        this.accessToken
+      );
+
+      console.log("🔹 Transcript Retrieved Successfully!");
+      return transcript;
+    } catch (error) {
+      console.error("❌ Failed to retrieve transcript:", error);
+      throw error;
     }
   }
 }
