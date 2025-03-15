@@ -11,7 +11,6 @@ export class ZoomService {
   private accountId = process.env.ZOOM_ACCOUNT_ID!;
   private accessToken = "";
 
-  // ✅ Fetch OAuth Token
   private async getAccessToken() {
     try {
       const response = await axios.post("https://zoom.us/oauth/token", null, {
@@ -34,7 +33,6 @@ export class ZoomService {
     }
   }
 
-  // ✅ Fetch Correct Join URL from Zoom API
   public async getJoinUrl(meetingId: string) {
     if (!this.accessToken) await this.getAccessToken();
 
@@ -66,7 +64,6 @@ export class ZoomService {
     return { meetingId, passcode };
   }
 
-  // Method to get meeting details from Zoom API
   async getMeetingDetails(meetingId: string) {
     if (!this.accessToken) await this.getAccessToken();
 
@@ -90,14 +87,12 @@ export class ZoomService {
     }
   }
 
-  // Function to get the transcript of a meeting
   async getTranscript(meetingId: string): Promise<string> {
     try {
       console.log(
         `🔹 Fetching Meeting Transcript for Meeting ID: ${meetingId}`
       );
 
-      // Call the function to fetch the transcript
       const transcript = await getMeetingTranscript(
         meetingId,
         this.accessToken
