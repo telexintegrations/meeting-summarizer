@@ -11,7 +11,6 @@ export class ZoomService {
   private accountId = process.env.ZOOM_ACCOUNT_ID!;
   private accessToken = "";
 
-  // ✅ Fetch OAuth Token
   private async getAccessToken() {
     try {
       const response = await axios.post("https://zoom.us/oauth/token", null, {
@@ -34,7 +33,6 @@ export class ZoomService {
     }
   }
 
-  // ✅ Fetch Correct Join URL from Zoom API
   public async getJoinUrl(meetingId: string) {
     if (!this.accessToken) await this.getAccessToken();
 
@@ -59,14 +57,42 @@ export class ZoomService {
     }
   }
 
-  // Function to get the transcript of a meeting
+  async getMeetingIdAndPasscode(inviteLink: string) {
+    const url = new URL(inviteLink);
+    const meetingId = url.pathname.split("/")[2];
+    const passcode = url.searchParams.get("pwd");
+    return { meetingId, passcode };
+  }
+
+  async getMeetingDetails(meetingId: string) {
+    if (!this.accessToken) await this.getAccessToken();
+
+    try {
+      const response = await axios.get(
+        `https://api.zoom.us/v2/meetings/${meetingId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+          },
+        }
+      );
+
+      return {
+        topic: response.data.topic,
+        start_time: response.data.start_time,
+      };
+    } catch (error) {
+      console.error("❌ Failed to fetch meeting details:", error);
+      throw error;
+    }
+  }
+
   async getTranscript(meetingId: string): Promise<string> {
     try {
       console.log(
         `🔹 Fetching Meeting Transcript for Meeting ID: ${meetingId}`
       );
 
-      // Call the function to fetch the transcript
       const transcript = await getMeetingTranscript(
         meetingId,
         this.accessToken

@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import express, { Request, Response } from "express";
+import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { ZoomBot } from "../zoom/zoomBot";
@@ -22,30 +22,26 @@ app.post(
   "/start-meeting",
   async (req: express.Request, res: express.Response) => {
     try {
-      const { meetingId, passcode, botName } = req.body;
+      const { inviteLink, botName } = req.body;
 
-      if (!meetingId) {
-        res.status(400).json({ error: "Meeting ID is required." });
+      if (!inviteLink) {
+        res
+          .status(400)
+          .json({ error: "Zoom Meeting invite link is required." });
         return;
       }
 
       console.log(
-        `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${meetingId}`
+        `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${inviteLink}`
       );
 
       // Start the Zoom bot to join the meeting
-      const meetingDetails = await zoomBot.joinAndListen(
-        meetingId,
-        passcode,
-        botName
-      );
+      const meetingDetails = await zoomBot.joinAndListen(inviteLink, botName);
 
       // Save the meeting to the database
       const meetingRepo = AppDataSource.getRepository(Meeting);
       const newMeeting = meetingRepo.create({
-        meeting_id: meetingDetails.id,
-        title: meetingDetails.topic,
-        start_time: new Date(meetingDetails.start_time),
+        meeting_id: meetingDetails.meetingId,
       });
 
       await meetingRepo.save(newMeeting);
