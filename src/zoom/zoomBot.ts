@@ -5,20 +5,23 @@ export class ZoomBot {
   private zoomService = new ZoomService();
 
   async joinAndListen(
-    meetingId: string,
-    passcode: string,
+    inviteLink: string,
     botName: string
-  ): Promise<{ id: string; topic: string; start_time: Date }> {
+  ): Promise<{ meetingId: string }> {
     try {
-      console.log(`🔹 Fetching Join URL for Meeting: ${meetingId}`);
+      console.log(`🔹 Fetching Join URL from Invite Link: ${inviteLink}`);
 
-      // ✅ Get the correct join URL from Zoom API
-      const responseData = await this.zoomService.getJoinUrl(meetingId);
-      const joinUrl = responseData.join_url;
+      // Extract the meetingId and passcode from the invite link
+      const { meetingId, passcode } =
+        await this.zoomService.getMeetingIdAndPasscode(inviteLink);
 
-      if (!joinUrl) {
-        throw new Error("Failed to retrieve the correct Zoom join link.");
+      if (!meetingId) {
+        throw new Error(
+          "Failed to extract the meeting ID from the invite link."
+        );
       }
+
+      console.log(`🔹 Meeting ID: ${meetingId}, Passcode: ${passcode}`);
 
       // Join URL for the Zoom Web Client
       const webClientUrl = `https://zoom.us/wc/${meetingId}/join`;
@@ -27,7 +30,7 @@ export class ZoomBot {
 
       // ✅ Launch Puppeteer Headless Browser
       const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         args: [
           "--no-sandbox",
           "--disable-setuid-sandbox",
@@ -43,9 +46,11 @@ export class ZoomBot {
       await page.waitForSelector("#input-for-name");
       await page.waitForSelector("#input-for-pwd");
 
-      // ✅ Enter the Name and Passcode
+      // ✅ Enter the Name and Passcode (if provided)
       await page.type("#input-for-name", botName);
-      await page.type("#input-for-pwd", passcode);
+      if (passcode) {
+        await page.type("#input-for-pwd", passcode);
+      }
 
       console.log("✅ Entered Name and Passcode!");
 
@@ -80,7 +85,9 @@ export class ZoomBot {
       await browser.close();
       console.log("✅ Bot Left the Meeting!");
 
-      return responseData;
+      return {
+        meetingId,
+      };
     } catch (error) {
       console.error("❌ Failed to join and listen:", error);
       throw error;
