@@ -1,5 +1,8 @@
 import puppeteer from "puppeteer";
 import { ZoomService } from "./zoomService";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export class ZoomBot {
   private zoomService = new ZoomService();
@@ -27,6 +30,7 @@ export class ZoomBot {
       console.log(`🔹 Bot Joining via Web Client URL: ${webClientUrl}`);
 
       const browser = await puppeteer.launch({
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
         headless: true,
         args: [
           "--no-sandbox",
