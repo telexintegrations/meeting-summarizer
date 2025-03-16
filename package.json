@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"mastra dev\" \"tsx src/api/index.ts\"",
     "start": "concurrently \"mastra dev\" \"tsx src/api/index.ts\""
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0"
+    "@types/express": "^5.0.0",
+    "ts-node-dev": "^2.0.0"
   }
 }
