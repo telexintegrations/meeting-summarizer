@@ -25,7 +25,7 @@ export class Meeting extends BaseEntity {
   @CreateDateColumn()
   created_at!: Date;
 
-  @OneToMany(() => Transcript, (transcript) => transcript.meeting, {
+  @OneToMany(() => Transcript, (transcript) => transcript.meeting_id, {
     cascade: true,
   })
   transcripts!: Transcript[];

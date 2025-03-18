@@ -30,7 +30,8 @@ export class ZoomBot {
       console.log(`🔹 Bot Joining via Web Client URL: ${webClientUrl}`);
 
       const browser = await puppeteer.launch({
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+        // executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+        executablePath: 'C:\\Program\ Files\ (x86)\\Google\\Chrome\\Application\\chrome.exe',
         headless: true,
         args: [
           "--no-sandbox",
@@ -80,7 +81,7 @@ export class ZoomBot {
       console.log("✅ Bot Left the Meeting!");
 
       return {
-        meetingId,
+        meetingId
       };
     } catch (error) {
       console.error("❌ Failed to join and listen:", error);

@@ -16,12 +16,14 @@ export class Transcript extends BaseEntity {
   @ManyToOne(() => Meeting, (meeting) => meeting.transcripts, {
     onDelete: "CASCADE",
   })
-  @Column("uuid")
-  meeting!: Meeting;
+  // @Column("uuid")
+  // meeting!: Meeting;
 
   @Column("text")
   transcript!: string;
 
   @CreateDateColumn()
   created_at!: Date;
+
+  meeting_id!: Meeting;
 }
