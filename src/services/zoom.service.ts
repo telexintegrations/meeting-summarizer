@@ -1,7 +1,8 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { getMeetingTranscript } from "../zoom/zoom.transcript";
-
+import logger from "../common/utils/logger";
+import { Worker } from "worker_threads";
+import path from "path";
 dotenv.config();
 
 export class ZoomService {
@@ -10,6 +11,11 @@ export class ZoomService {
   private clientSecret = process.env.ZOOM_CLIENT_SECRET!;
   private accountId = process.env.ZOOM_ACCOUNT_ID!;
   private accessToken = "";
+  private activeWorkers: Set<Worker>;
+
+  constructor() {
+    this.activeWorkers = new Set();
+  }
 
   private async getAccessToken() {
     try {
@@ -25,9 +31,9 @@ export class ZoomService {
         },
       });
       this.accessToken = response.data.access_token;
-      console.log("✅ Zoom API Access Token Acquired");
+      logger.info("✅ Zoom API Access Token Acquired");
     } catch (error: any) {
-      console.error(
+      logger.error(
         "❌ Failed to get Zoom API token:",
         error.response?.data || error
       );
@@ -48,10 +54,10 @@ export class ZoomService {
         }
       );
 
-      console.log("✅ Correct Join URL Retrieved:", response.data.join_url);
+      logger.info("✅ Correct Join URL Retrieved:", response.data.join_url);
       return response.data;
     } catch (error: any) {
-      console.error(
+      logger.error(
         "❌ Failed to fetch join URL:",
         error.response?.data || error
       );
@@ -84,27 +90,47 @@ export class ZoomService {
         start_time: response.data.start_time,
       };
     } catch (error) {
-      console.error("❌ Failed to fetch meeting details:", error);
+      logger.error("❌ Failed to fetch meeting details:", error);
       throw error;
     }
   }
 
-  async getTranscript(meetingId: string): Promise<string> {
-    try {
-      console.log(
-        `🔹 Fetching Meeting Transcript for Meeting ID: ${meetingId}`
-      );
+  public joinMeetingWithWorker = async (workerData: {
+    inviteLink: string;
+  }): Promise<void> => {
+    logger.info("🔹 Starting Bot Worker...", workerData);
 
-      const transcript = await getMeetingTranscript(
-        meetingId,
-        this.accessToken
-      );
+    const workerPath = path.resolve(
+      __dirname,
+      "..",
+      "zoom",
+      "zoombot.worker.ts"
+    );
+    const worker = new Worker(workerPath);
 
-      console.log("🔹 Transcript Retrieved Successfully!");
-      return transcript;
-    } catch (error) {
-      console.error("❌ Failed to retrieve transcript:", error);
-      throw error;
-    }
-  }
+    this.activeWorkers.add(worker);
+
+    return new Promise<void>((resolve, reject) => {
+      worker.on("message", (msg) => {
+        logger.info("✅ Worker message received:", msg);
+        resolve();
+        this.activeWorkers.delete(worker);
+      });
+
+      worker.on("error", (err) => {
+        logger.error("❌ Worker error:", err);
+        reject(err);
+        this.activeWorkers.delete(worker);
+      });
+
+      worker.on("exit", (code) => {
+        if (code !== 0) {
+          reject(`Worker stopped with exit code ${code}`);
+        }
+        this.activeWorkers.delete(worker);
+      });
+
+      worker.postMessage(workerData);
+    });
+  };
 }
