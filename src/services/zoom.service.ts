@@ -26,7 +26,7 @@ export class ZoomService {
         },
         headers: {
           Authorization: `Basic ${Buffer.from(
-            `${this.clientId}:${this.clientSecret}`
+            `${this.clientId}:${this.clientSecret}`,
           ).toString("base64")}`,
         },
       });
@@ -35,7 +35,7 @@ export class ZoomService {
     } catch (error: any) {
       logger.error(
         "❌ Failed to get Zoom API token:",
-        error.response?.data || error
+        error.response?.data || error,
       );
       throw new Error("Failed to get Zoom API token");
     }
@@ -51,7 +51,7 @@ export class ZoomService {
           headers: {
             Authorization: `Bearer ${this.accessToken}`,
           },
-        }
+        },
       );
 
       logger.info("✅ Correct Join URL Retrieved:", response.data.join_url);
@@ -59,7 +59,7 @@ export class ZoomService {
     } catch (error: any) {
       logger.error(
         "❌ Failed to fetch join URL:",
-        error.response?.data || error
+        error.response?.data || error,
       );
       return null;
     }
@@ -82,7 +82,7 @@ export class ZoomService {
           headers: {
             Authorization: `Bearer ${this.accessToken}`,
           },
-        }
+        },
       );
 
       return {
@@ -104,7 +104,7 @@ export class ZoomService {
       __dirname,
       "..",
       "zoom",
-      "zoombot.worker.ts"
+      `zoombot.worker.${process.env.NODE_ENV === "production" ? "js" : "ts"}`,
     );
     const worker = new Worker(workerPath);
 
