@@ -3,11 +3,11 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { ZoomBot } from "../zoom/zoomBot";
-import { TranscriptionService } from "../transcription/transcriptionService";
-import { TelexService } from "../telex/telexService";
+import { TranscriptionService } from "../services/transcription.service";
+import { TelexService } from "../services/telex.service";
 import { Meeting } from "../db/meeting.entity";
 import { AppDataSource } from "../db/db";
-import { ZoomService } from "../zoom/zoomService";
+import { ZoomService } from "../services/zoom.service";
 
 dotenv.config();
 const app = express();
@@ -32,7 +32,7 @@ app.post(
       }
 
       console.log(
-        `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${inviteLink}`
+        `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${inviteLink}`,
       );
 
       // Start the Zoom bot to join the meeting
@@ -53,7 +53,7 @@ app.post(
       res.status(500).json({ error: "Internal Server Error" });
       return;
     }
-  }
+  },
 );
 
 const PORT = process.env.PORT || 3000;

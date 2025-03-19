@@ -12,6 +12,11 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "src/telex",
+    "src/services/telex.service.ts",
+    "src/services/transcription.service.ts"
+  ],
   "exclude": ["node_modules", "dist", ".mastra"]
 }
