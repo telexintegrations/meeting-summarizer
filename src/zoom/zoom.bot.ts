@@ -5,11 +5,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export class ZoomBot {
-  private zoomService = new ZoomService();
+  private zoomService: ZoomService;
+  private botName = "Telex AI Meeting Summarizer";
 
   async joinAndListen(
     inviteLink: string,
-    botName: string,
+    botName: string
   ): Promise<{ meetingId: string }> {
     try {
       console.log(`🔹 Fetching Join URL from Invite Link: ${inviteLink}`);
@@ -19,18 +20,15 @@ export class ZoomBot {
 
       if (!meetingId) {
         throw new Error(
-          "Failed to extract the meeting ID from the invite link.",
+          "Failed to extract the meeting ID from the invite link."
         );
       }
-
-      console.log(`🔹 Meeting ID: ${meetingId}, Passcode: ${passcode}`);
 
       const webClientUrl = `https://zoom.us/wc/${meetingId}/join`;
 
       console.log(`🔹 Bot Joining via Web Client URL: ${webClientUrl}`);
 
       const browser = await puppeteer.launch({
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
         headless: true,
         args: [
           "--no-sandbox",
@@ -47,7 +45,7 @@ export class ZoomBot {
       await page.waitForSelector("#input-for-name");
       await page.waitForSelector("#input-for-pwd");
 
-      await page.type("#input-for-name", botName);
+      await page.type("#input-for-name", this.botName);
       if (passcode) {
         await page.type("#input-for-pwd", passcode);
       }
@@ -74,14 +72,12 @@ export class ZoomBot {
       await page.click(stopVideoButtonSelector);
       console.log("✅ Bot Stopped the Video!");
 
-      await new Promise((resolve) => setTimeout(resolve, 3600000));
+      await new Promise((resolve) => setTimeout(resolve, 72000000));
 
       await browser.close();
       console.log("✅ Bot Left the Meeting!");
 
-      return {
-        meetingId,
-      };
+      return { meetingId };
     } catch (error) {
       console.error("❌ Failed to join and listen:", error);
       throw error;

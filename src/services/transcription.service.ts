@@ -1,4 +1,3 @@
-import { mastra } from "../mastra";
 import { AppDataSource } from "../db/db";
 import { Transcript } from "../db/transcript.entity";
 import { Meeting } from "../db/meeting.entity";
