@@ -1,40 +1,35 @@
 import express from "express";
-import { ZoomBot } from "./zoom.bot";
-import catchAsync from "../common/utils/catch-async";
+import { ZoomService } from "../services/zoom.service";
+import logger from "../common/utils/logger";
 
 export class ZoomController {
-  private zoomBot: ZoomBot;
+  private zoomService: ZoomService;
 
   constructor() {
-    this.zoomBot = new ZoomBot();
+    this.zoomService = new ZoomService();
   }
 
-  public joinMeeting = catchAsync(
-    async (req: express.Request, res: express.Response) => {
-      const { inviteLink } = req.body;
+  public joinMeeting = async (req: express.Request, res: express.Response) => {
+    const { inviteLink } = req.body;
 
-      if (!inviteLink) {
-        res
-          .status(400)
-          .json({ error: "Zoom Meeting invite link is required." });
-        return;
-      }
-
-      console.log(
-        `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${inviteLink}`
-      );
-
-      // Start the Zoom bot to join the meeting
-      const joiningMeeting = await this.zoomBot.joinAndListen(inviteLink);
-
-      if (!joiningMeeting) {
-        return res.status(400).json({ error: "Failed to join meeting" });
-      }
-
-      return res.status(200).json({
-        message: "Meeting Joined Successfully",
-        meetingId: joiningMeeting.meetingId,
-      });
+    if (!inviteLink) {
+      return res
+        .status(400)
+        .json({ error: "Invalid or missing Zoom invite link." });
     }
-  );
+
+    logger.info(
+      `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${inviteLink}`
+    );
+
+    try {
+      await this.zoomService.joinMeetingWithWorker({ inviteLink });
+      return res
+        .status(200)
+        .json({ success: true, message: "✅ Bot Joined the Meeting" });
+    } catch (error: any) {
+      logger.error("❌ Error joining meeting:", error);
+      return res.status(500).json({ error: error.message });
+    }
+  };
 }
