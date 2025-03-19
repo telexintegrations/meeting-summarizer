@@ -8,10 +8,11 @@ export class ZoomBot {
   private zoomService: ZoomService;
   private botName = "Telex AI Meeting Summarizer";
 
-  async joinAndListen(
-    inviteLink: string,
-    botName: string
-  ): Promise<{ meetingId: string }> {
+  constructor() {
+    this.zoomService = new ZoomService();
+  }
+
+  async joinAndListen(inviteLink: string): Promise<{ meetingId: string }> {
     try {
       console.log(`🔹 Fetching Join URL from Invite Link: ${inviteLink}`);
 
