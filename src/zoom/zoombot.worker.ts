@@ -3,7 +3,7 @@ import puppeteer from "puppeteer";
 import logger from "../common/utils/logger";
 import { ZoomService } from "../services/zoom.service";
 
-const botName = "Telex AI Meeting Summarizer";
+const botName = "Tom Meeting Summarizer";
 const zoomService = new ZoomService();
 
 parentPort?.on("message", async (workerData: { inviteLink: string }) => {
@@ -17,7 +17,7 @@ parentPort?.on("message", async (workerData: { inviteLink: string }) => {
     logger.info(`🔹 Fetching Join URL from Invite Link: ${inviteLink}`);
 
     const { meetingId, passcode } = await zoomService.getMeetingIdAndPasscode(
-      inviteLink
+      inviteLink,
     );
 
     if (!meetingId) {
@@ -58,13 +58,13 @@ parentPort?.on("message", async (workerData: { inviteLink: string }) => {
     logger.info("✅ Bot Submitted Name and Passcode!");
 
     await page.waitForSelector(
-      '.preview-video__control-button[aria-label="Stop Video"]'
+      '.preview-video__control-button[aria-label="Stop Video"]',
     );
     await page.click('.preview-video__control-button[aria-label="Stop Video"]');
     logger.info("✅ Bot Stopped the Video!");
 
     await page.waitForSelector(
-      '.preview-video__control-button[aria-label="Mute"]'
+      '.preview-video__control-button[aria-label="Mute"]',
     );
     await page.click('.preview-video__control-button[aria-label="Mute"]');
     logger.info("✅ Bot Muted the Microphone!");
