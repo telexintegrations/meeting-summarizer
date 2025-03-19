@@ -1,6 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { getMeetingTranscript } from "../zoom/zoomTranscript";
+import { getMeetingTranscript } from "../zoom/zoom.transcript";
 
 dotenv.config();
 
@@ -19,7 +19,9 @@ export class ZoomService {
           account_id: this.accountId,
         },
         headers: {
-          Authorization: `Basic ${Buffer.from(`${this.clientId}:${this.clientSecret}`).toString("base64")}`,
+          Authorization: `Basic ${Buffer.from(
+            `${this.clientId}:${this.clientSecret}`
+          ).toString("base64")}`,
         },
       });
       this.accessToken = response.data.access_token;
@@ -27,7 +29,7 @@ export class ZoomService {
     } catch (error: any) {
       console.error(
         "❌ Failed to get Zoom API token:",
-        error.response?.data || error,
+        error.response?.data || error
       );
       throw new Error("Failed to get Zoom API token");
     }
@@ -43,7 +45,7 @@ export class ZoomService {
           headers: {
             Authorization: `Bearer ${this.accessToken}`,
           },
-        },
+        }
       );
 
       console.log("✅ Correct Join URL Retrieved:", response.data.join_url);
@@ -51,7 +53,7 @@ export class ZoomService {
     } catch (error: any) {
       console.error(
         "❌ Failed to fetch join URL:",
-        error.response?.data || error,
+        error.response?.data || error
       );
       return null;
     }
@@ -74,7 +76,7 @@ export class ZoomService {
           headers: {
             Authorization: `Bearer ${this.accessToken}`,
           },
-        },
+        }
       );
 
       return {
@@ -90,12 +92,12 @@ export class ZoomService {
   async getTranscript(meetingId: string): Promise<string> {
     try {
       console.log(
-        `🔹 Fetching Meeting Transcript for Meeting ID: ${meetingId}`,
+        `🔹 Fetching Meeting Transcript for Meeting ID: ${meetingId}`
       );
 
       const transcript = await getMeetingTranscript(
         meetingId,
-        this.accessToken,
+        this.accessToken
       );
 
       console.log("🔹 Transcript Retrieved Successfully!");
