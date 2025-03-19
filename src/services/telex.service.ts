@@ -1,4 +1,3 @@
-import { GenerateTextResult } from "ai";
 import axios from "axios";
 
 export class TelexService {
