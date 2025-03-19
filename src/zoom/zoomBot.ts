@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { ZoomService } from "./zoomService";
+import { ZoomService } from "../services/zoom.service";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -9,7 +9,7 @@ export class ZoomBot {
 
   async joinAndListen(
     inviteLink: string,
-    botName: string
+    botName: string,
   ): Promise<{ meetingId: string }> {
     try {
       console.log(`🔹 Fetching Join URL from Invite Link: ${inviteLink}`);
@@ -19,7 +19,7 @@ export class ZoomBot {
 
       if (!meetingId) {
         throw new Error(
-          "Failed to extract the meeting ID from the invite link."
+          "Failed to extract the meeting ID from the invite link.",
         );
       }
 
