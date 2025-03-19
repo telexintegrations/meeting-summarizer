@@ -57,18 +57,6 @@ parentPort?.on("message", async (workerData: { inviteLink: string }) => {
     await page.click(joinButtonSelector);
     logger.info("✅ Bot Submitted Name and Passcode!");
 
-    await page.waitForSelector(
-      '.preview-video__control-button[aria-label="Stop Video"]',
-    );
-    await page.click('.preview-video__control-button[aria-label="Stop Video"]');
-    logger.info("✅ Bot Stopped the Video!");
-
-    await page.waitForSelector(
-      '.preview-video__control-button[aria-label="Mute"]',
-    );
-    await page.click('.preview-video__control-button[aria-label="Mute"]');
-    logger.info("✅ Bot Muted the Microphone!");
-
     parentPort?.postMessage({
       success: true,
       message: "✅ Bot Joined the Meeting",
