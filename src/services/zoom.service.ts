@@ -100,12 +100,7 @@ export class ZoomService {
   }): Promise<void> => {
     logger.info("🔹 Starting Bot Worker...", workerData);
 
-    const workerPath = path.resolve(
-      __dirname,
-      "..",
-      "zoom",
-      `zoombot.worker.${process.env.NODE_ENV === "production" ? "js" : "ts"}`,
-    );
+    const workerPath = path.resolve(__dirname, "..", "zoom", "zoombot.worker");
     const worker = new Worker(workerPath);
 
     this.activeWorkers.add(worker);
