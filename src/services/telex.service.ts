@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as data from "../telex/integration.json";
 
 export class TelexService {
   async sendToTelex(summary: string | undefined) {
@@ -12,5 +13,9 @@ export class TelexService {
     } catch (error) {
       console.error("❌ Failed to Send Summary to Telex:", error);
     }
+  }
+
+  getTelexIntegrationConfig() {
+    return data;
   }
 }

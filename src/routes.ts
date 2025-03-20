@@ -1,7 +1,10 @@
-import { Application } from "express";
+import { Application, Response, Request } from "express";
 import { ZoomController } from "./zoom/zoom.controller";
+import { TelexService } from "./services/telex.service";
 import catchAsync from "./common/utils/catch-async";
+
 const zoomController = new ZoomController();
+const telexService = new TelexService();
 
 const setupRoutes = (app: Application): void => {
   // Health Check route
@@ -10,6 +13,10 @@ const setupRoutes = (app: Application): void => {
   });
 
   app.post("/join-meeting", catchAsync(zoomController.joinMeeting));
+  app.get("/integration.json", (req: Request, res: Response) => {
+    res.json(telexService.getTelexIntegrationConfig());
+    return;
+  });
 };
 
 export default setupRoutes;
