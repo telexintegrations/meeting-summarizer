@@ -12,19 +12,12 @@ const setupRoutes = (app: Application): void => {
     res.send("Server is healthy");
   });
 
-  app.post("/join-meeting", catchAsync(zoomController.joinMeeting));
   app.get("/integration.json", (req: Request, res: Response) => {
     res.json(telexService.getTelexIntegrationConfig());
     return;
   });
 
-  app.post(
-    "/webhook",
-    catchAsync(async (req: Request, res: Response) => {
-      console.log(req.body);
-      res.status(200).json({});
-    }),
-  );
+  app.post("/webhook", catchAsync(zoomController.joinMeeting));
 };
 
 export default setupRoutes;
