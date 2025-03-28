@@ -4,7 +4,7 @@ import { exec } from "child_process";
 import logger from "../common/utils/logger";
 import { ZoomService } from "../services/zoom.service";
 
-const ffmpegPath = "/usr/bin/ffmpeg"; // Adjust if needed
+const ffmpegPath = "/usr/bin/ffmpeg";
 const botName = "Tom Meeting Summarizer";
 const zoomService = new ZoomService();
 
@@ -81,7 +81,7 @@ async function waitForMeetingToEnd(page: any) {
 function startAudioRecording() {
   exec(
     `${ffmpegPath} -f pulse -i virtual_sink.monitor -acodec mp3 output.mp3`,
-    (error) => {
+    (error: any) => {
       if (error) logger.error(`❌ FFmpeg Error: ${error}`);
       else logger.info("✅ Audio recording started.");
     },
@@ -89,7 +89,7 @@ function startAudioRecording() {
 }
 
 function stopAudioRecording() {
-  exec("pkill ffmpeg", (error) => {
+  exec("pkill ffmpeg", (error: any) => {
     if (error) logger.error(`❌ Error stopping FFmpeg: ${error}`);
     else logger.info("✅ Audio recording stopped.");
   });
@@ -98,7 +98,7 @@ function stopAudioRecording() {
 async function transcribeAudio(audioFilePath: string) {
   exec(
     `whisper ${audioFilePath} --model large --output_format txt`,
-    (error, stdout) => {
+    (error: any, stdout: any) => {
       if (error) logger.error(`❌ Whisper Error: ${error}`);
       else {
         logger.info("✅ Transcription complete!");
