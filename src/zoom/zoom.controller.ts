@@ -10,7 +10,10 @@ export class ZoomController {
   }
 
   public joinMeeting = async (req: express.Request, res: express.Response) => {
-    const { inviteLink } = req.body;
+    const { message, channel_id, thread_id, org_id } = req.body;
+
+    const regex = /href="([^"]+)"/;
+    const inviteLink = message.match(regex)[1];
 
     if (!inviteLink) {
       return res
@@ -19,7 +22,7 @@ export class ZoomController {
     }
 
     logger.info(
-      `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${inviteLink}`
+      `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${inviteLink}`,
     );
 
     try {
