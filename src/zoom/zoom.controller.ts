@@ -1,6 +1,7 @@
 import express from "express";
 import { ZoomService } from "../services/zoom.service";
 import logger from "../common/utils/logger";
+import axios from "axios";
 
 export class ZoomController {
   private zoomService: ZoomService;
@@ -22,14 +23,26 @@ export class ZoomController {
     }
 
     logger.info(
-      `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${inviteLink}`,
+      `🔹 Meeting Summarizer Bot Requested to Join Meeting: ${inviteLink}`
     );
 
     try {
-      await this.zoomService.joinMeetingWithWorker({ inviteLink });
-      return res
-        .status(200)
-        .json({ success: true, message: "✅ Bot Joined the Meeting" });
+      const baseUrl: any = "https://telex.im/dashboard/channels/"
+      const telexResponse = await axios.post(
+        `${baseUrl}/${channel_id}/messages`,
+        {
+          thread_id: thread_id,
+          org_id: org_id,
+          text: "✅ Bot Joined the Meeting",
+        }
+      );
+      if (telexResponse.status !== 200) {
+        logger.error(
+          `Telex API error: ${telexResponse.status} - ${telexResponse.data}`
+        );
+        return res.status(500).json({ error: "Telex API error" });
+      }
+      return res.status(200).json({});
     } catch (error: any) {
       logger.error("❌ Error joining meeting:", error);
       return res.status(500).json({ error: error.message });

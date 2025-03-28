@@ -27,7 +27,7 @@ The full transcript is automatically sent to a Telex channel for easy retrieval.
 ## 🛠 Installation
 
 1️⃣ Clone the Repository
-git clone https://github.com/AdeGneus/meeting-summarizer.git
+git clone https://github.com/telexintegrations/meeting-summarizer
 cd meeting-summarizer
 
 2️⃣ Install Dependencies
@@ -46,16 +46,16 @@ yarn dev
 ## 📂 Folder Structure
 
 ```.
+.
+├── Dockerfile
+├── README.md
+├── logs
+├── node_modules
+├── nodemon.json
+├── package.json
 ├── src
-│   ├── api
-│   ├── db
-│   ├── mastra
-│   ├── telex
-│   ├── transcription
-│   ├── zoom
-│   ├── index.ts
-│   ├── README.md
-└── .env.example
+├── tsconfig.json
+└── yarn.lock
 ```
 
 ## 👨‍💻 Contributing
