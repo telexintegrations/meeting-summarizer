@@ -27,22 +27,7 @@ export class ZoomController {
     );
 
     try {
-      const baseUrl: any = "https://telex.im/dashboard/channels/"
-      const telexResponse = await axios.post(
-        `${baseUrl}/${channel_id}/messages`,
-        {
-          thread_id: thread_id,
-          org_id: org_id,
-          text: "✅ Bot Joined the Meeting",
-        }
-      );
-      if (telexResponse.status !== 200) {
-        logger.error(
-          `Telex API error: ${telexResponse.status} - ${telexResponse.data}`
-        );
-        return res.status(500).json({ error: "Telex API error" });
-      }
-      return res.status(200).json({});
+      return res.status(200).json({ message:"Got it! I'm joining the Zoom meeting. I'll transcribe it and send a summary here when it's done."});
     } catch (error: any) {
       logger.error("❌ Error joining meeting:", error);
       return res.status(500).json({ error: error.message });
