@@ -27,7 +27,7 @@ export class ZoomController {
     );
 
     try {
-      return res.status(200).json({ message:"Got it! I'm joining the Zoom meeting. I'll transcribe it and send a summary here when it's done."});
+      return res.status(200).json({ success: true ,message:"Got it! I'm joining the Zoom meeting. I'll transcribe it and send a summary here when it's done."});
     } catch (error: any) {
       logger.error("❌ Error joining meeting:", error);
       return res.status(500).json({ error: error.message });
